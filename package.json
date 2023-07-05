@@ -1,0 +1,30 @@
+{
+  "name": "ticket-to-branch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node src/index.ts",
+    "dev:watch": "ts-node-dev --respawn src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jira-client": "^7.1.6",
+    "esbuild": "^0.18.11",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^2.3.0",
+    "@inquirer/select": "^1.2.3",
+    "dotenv": "^16.3.1",
+    "jira-client": "^8.2.2",
+    "openai": "^3.3.0",
+    "ora-classic": "^5.4.2",
+    "picocolors": "^1.0.0"
+  }
+}
