@@ -1,33 +1,10 @@
-import "dotenv/config";
-import { getOpenAiApi } from "./open-ai";
-import ora from "ora-classic";
 import { input } from "@inquirer/prompts";
-import select, { Separator } from "@inquirer/select";
-import { getJiraApi } from "./jira";
+import select from "@inquirer/select";
+import "dotenv/config";
+import ora from "ora-classic";
 import pc from "picocolors";
-
-const prompt = [
-  "Please suggest 5 possible English branch names on github for the following Jira ticket name.",
-  "Branch names must be output as comma-separated text.",
-  "Do not output any text other than the branch name.",
-  "Branch names do not need to be prefixed with feature, bugfix, etc.",
-  "Branch names are all lowercase.",
-  "branch names are in English.",
-  "__ISSUE_SUMMARY__",
-  "",
-  "#Output",
-];
-
-const ISSUE_NUMBER = "MJ-1";
-const ISSUE_SUMMARY = "JIRA REST APIで課題情報を取得";
-
-const setPrompt = (issueSummary: string) => {
-  const issueSummaryReplacedPrompt = prompt.map((p) => {
-    if (p === "__ISSUE_SUMMARY__") return `'${issueSummary}'`;
-    return p;
-  });
-  return issueSummaryReplacedPrompt.join("\n");
-};
+import { getJiraApi } from "./jira";
+import { getOpenAiApi, setPrompt } from "./open-ai";
 
 const getEnv = () => {
   if (!process.env.JIRA_USERNAME)
@@ -50,8 +27,8 @@ const getEnv = () => {
   };
 };
 
-const sleep = (msec: number) =>
-  new Promise((resolve) => setTimeout(resolve, msec));
+// const sleep = (msec: number) =>
+//   new Promise((resolve) => setTimeout(resolve, msec));
 
 const getSpinner = () => {
   const chatSpinner = ora("ブランチ名をChatGPTが提案中…");
@@ -80,7 +57,7 @@ const main = async () => {
   );
 
   chatSpinner.start();
-  const prompt = setPrompt(ISSUE_SUMMARY);
+  const prompt = setPrompt(issue.fields.summary);
   const chatCompletion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [{ role: "user", content: prompt }],
@@ -91,10 +68,8 @@ const main = async () => {
     chatCompletion.data.choices?.[0].message?.content?.split(",");
   if (!suggestedBranchNames) throw new Error("Failed to get choices");
 
-  console.log(suggestedBranchNames);
-
   const choices = suggestedBranchNames.map((branchName) => {
-    const prefix = `hotfix/${ISSUE_NUMBER}/`;
+    const prefix = `hotfix/${issueNumber}/`;
     branchName = `${prefix}${branchName}`.replace(/\r?\n/g, "").trimStart();
     return {
       name: branchName,
