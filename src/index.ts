@@ -70,7 +70,7 @@ const main = async () => {
 
   const choices = suggestedBranchNames.map((branchName) => {
     const prefix = `hotfix/${issueNumber}/`;
-    branchName = `${prefix}${branchName}`.replace(/\r?\n/g, "").trimStart();
+    branchName = `${prefix}${branchName}`.replace(/\n/g, "").trimStart();
     return {
       name: branchName,
       value: branchName,
